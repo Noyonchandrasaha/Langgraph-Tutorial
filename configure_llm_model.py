@@ -9,16 +9,24 @@ def get_weather(location: str) -> str:
     """Get the current weather for a given location."""
     return f"The weather in {location} is sunny with a high of 25°C."
 #add a temperature parameter to the model
-llm = ChatGroq(
+
+primary_llm = ChatGroq(
     groq_api_key=os.getenv("GROQ_API_KEY"),
-    model_name="llama3-70b-8192",
-    temperature=0.3,  # Adjust the temperature for more controlled responses,
-    max_tokens=1024,  # Set a maximum token limit for the response
+    model_name="llama-3.3-70b-versatile",
+    temperature=0.3,
+    max_tokens=1024,
     disable_streaming=True
 )
+fallback_llm = ChatGroq(
+    model="llama3-70b-8192", # Use a different model for fallback
+    groq_api_key=os.getenv("GROQ_API_KEY"),
+    temperature=0.3,
+    max_tokens=524
+)
+llm_with_fallback = primary_llm.with_fallbacks([fallback_llm])
 
 agent = create_react_agent(
-    model=llm,
+    model=llm_with_fallback,
     tools=[get_weather],
     prompt="You are a helpful assistant that can provide weather information using the get_weather function."
 )
