@@ -13,7 +13,8 @@ llm = ChatGroq(
     groq_api_key=os.getenv("GROQ_API_KEY"),
     model_name="llama3-70b-8192",
     temperature=0.3,  # Adjust the temperature for more controlled responses,
-    max_tokens=1024  # Set a maximum token limit for the response
+    max_tokens=1024,  # Set a maximum token limit for the response
+    disable_streaming=True
 )
 
 agent = create_react_agent(
